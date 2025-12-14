@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome - AI Benchmarks</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;600&family=Bodoni+Moda:opsz,wght@6..96,600&family=Prata&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
         body, html {
@@ -47,14 +47,69 @@
             text-shadow: 0 10px 30px rgba(0,0,0,0.3);
             cursor: default;
             transition: letter-spacing 0.5s ease;
+            
+            /* Flex layout to align the morphing text correctly */
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 0px; 
         }
 
         h1.welcome-title:hover {
             letter-spacing: 5px;
         }
 
-        .title-part-1 { font-weight: 400; font-style: italic; letter-spacing: -3px; }
-        .title-part-2 { font-weight: 600; font-style: normal; letter-spacing: -2px; }
+        .title-part-1 { 
+            font-weight: 400; 
+            font-style: italic; 
+            letter-spacing: -3px; 
+        }
+
+        /* --- MORPHING TEXT CONTAINER --- */
+        /* This grid allows us to stack the 3 versions of "come" directly on top of each other */
+        .morph-container {
+            display: inline-grid;
+            grid-template-areas: "stack";
+            margin-left: 2px; /* Slight spacing adjustment */
+        }
+
+        /* All 3 spans occupy the exact same space */
+        .morph-text {
+            grid-area: stack;
+            font-weight: 600;
+            font-style: normal;
+            letter-spacing: -2px;
+            opacity: 0; /* Start invisible */
+            animation: fontMorph 9s infinite ease-in-out;
+        }
+
+        /* Font 1: Playfair (Original) */
+        .morph-text:nth-child(1) {
+            font-family: 'Playfair Display', serif;
+            animation-delay: 0s;
+        }
+
+        /* Font 2: Bodoni Moda (Very high contrast, sharp) */
+        .morph-text:nth-child(2) {
+            font-family: 'Bodoni Moda', serif;
+            animation-delay: 3s;
+        }
+
+        /* Font 3: Prata (Elegant, softer) */
+        .morph-text:nth-child(3) {
+            font-family: 'Prata', serif;
+            animation-delay: 6s;
+            transform: translateY(2px); /* Micro-adjustment for Prata's baseline */
+        }
+
+        /* The Animation: Fade In -> Wait -> Fade Out */
+        @keyframes fontMorph {
+            0% { opacity: 0; filter: blur(2px); }
+            10% { opacity: 1; filter: blur(0px); }
+            33% { opacity: 1; filter: blur(0px); }
+            43% { opacity: 0; filter: blur(2px); }
+            100% { opacity: 0; }
+        }
 
         .subtitle {
             font-family: 'Inter', sans-serif;
@@ -134,7 +189,13 @@
 
     <div class="content-wrapper" id="parallax-container">
         <h1 class="welcome-title">
-            <span class="title-part-1">Wel</span><span class="title-part-2">come</span>
+            <span class="title-part-1">Wel</span>
+            
+            <span class="morph-container">
+                <span class="morph-text">come</span>
+                <span class="morph-text">come</span>
+                <span class="morph-text">come</span>
+            </span>
         </h1>
 
         <p class="subtitle">
@@ -154,7 +215,6 @@
         document.addEventListener('mousemove', (e) => {
             const x = (window.innerWidth / 2 - e.pageX) / 50;
             const y = (window.innerHeight / 2 - e.pageY) / 50;
-
             container.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
         });
 
