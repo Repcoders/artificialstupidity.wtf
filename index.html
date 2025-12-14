@@ -62,7 +62,7 @@
             font-weight: 400; 
             font-style: italic; 
             letter-spacing: -3px;
-            z-index: 2;
+            z-index: 2; /* Keeps "Wel" on top if they touch */
         }
 
         /* --- SPACING FIX --- */
@@ -70,8 +70,8 @@
             display: grid; 
             grid-template-areas: "stack";
             
-            /* NEGATIVE MARGIN: This pulls the word "come" closer to "Wel" */
-            margin-left: -0.12em; 
+            /* ADJUSTED MARGIN: Moves 'come' slightly right to fix overlap */
+            margin-left: -0.04em; 
             
             justify-items: start;
         }
