@@ -1,1 +1,167 @@
-working
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome - AI Benchmarks</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: #111;
+        }
+
+        body {
+            background-image: url('https://i.ibb.co/cKLZ7KRC/IMG-0267.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: inset 0 0 150px rgba(0,0,0,0.3);
+        }
+
+        .content-wrapper {
+            text-align: center;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s ease-out;
+            will-change: transform;
+        }
+
+        h1.welcome-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 7.5rem;
+            margin-bottom: 0.5rem;
+            line-height: 1;
+            color: white;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            cursor: default;
+            transition: letter-spacing 0.5s ease;
+        }
+
+        h1.welcome-title:hover {
+            letter-spacing: 5px;
+        }
+
+        .title-part-1 { font-weight: 400; font-style: italic; letter-spacing: -3px; }
+        .title-part-2 { font-weight: 600; font-style: normal; letter-spacing: -2px; }
+
+        .subtitle {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 600px;
+            margin-bottom: 3.5rem;
+            line-height: 1.6;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            letter-spacing: 0.5px;
+        }
+
+        .liquid-button {
+            position: relative;
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: white;
+            padding: 22px 55px;
+            border-radius: 60px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.01);
+            backdrop-filter: blur(12px) brightness(1.1);
+            -webkit-backdrop-filter: blur(12px) brightness(1.1);
+            border: 1px solid rgba(255, 255, 255, 0.4); 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                inset 0 2px 4px rgba(255, 255, 255, 0.95),
+                inset 0 15px 30px rgba(255, 255, 255, 0.1),
+                inset 0 -4px 8px rgba(255, 255, 255, 0.3),
+                0 15px 35px -10px rgba(0, 0, 0, 0.4);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .liquid-button span, .liquid-button i {
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6); 
+            z-index: 2;
+        }
+
+        .liquid-button:hover {
+            transform: translateY(-4px) scale(1.03);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 
+                inset 0 4px 8px rgba(255, 255, 255, 1), 
+                inset 0 0 50px rgba(255, 255, 255, 0.3),
+                0 25px 50px -10px rgba(0, 0, 0, 0.5),
+                0 0 30px rgba(255, 255, 255, 0.2);
+        }
+
+        .liquid-button:active {
+            transform: translateY(-1px) scale(0.98);
+            box-shadow: inset 0 2px 5px rgba(255, 255, 255, 0.5);
+        }
+
+        .liquid-button i {
+            font-size: 1.3rem;
+            transition: transform 0.4s ease;
+        }
+
+        .liquid-button:hover i {
+            transform: rotate(-15deg) scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            h1.welcome-title { font-size: 4rem; }
+            .subtitle { font-size: 1rem; padding: 0 20px; }
+            .liquid-button { padding: 18px 40px; font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="content-wrapper" id="parallax-container">
+        <h1 class="welcome-title">
+            <span class="title-part-1">Wel</span><span class="title-part-2">come</span>
+        </h1>
+
+        <p class="subtitle">
+            The definitive global standard for analyzing AI censorship, <br> 
+            safety alignment, and model bias.
+        </p>
+
+        <a href="#" class="liquid-button">
+            <i class="ph ph-chart-polar"></i>
+            <span>Explore Benchmarks</span>
+        </a>
+    </div>
+
+    <script>
+        const container = document.getElementById('parallax-container');
+        
+        document.addEventListener('mousemove', (e) => {
+            const x = (window.innerWidth / 2 - e.pageX) / 50;
+            const y = (window.innerHeight / 2 - e.pageY) / 50;
+
+            container.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+        });
+
+        document.addEventListener('mouseleave', () => {
+             container.style.transform = `rotateY(0deg) rotateX(0deg)`;
+        });
+    </script>
+
+</body>
+</html>
