@@ -38,6 +38,7 @@
             will-change: transform;
         }
 
+        /* PARENT TITLE CONTAINER */
         h1.welcome-title {
             font-family: 'Playfair Display', serif;
             font-size: 7.5rem;
@@ -48,11 +49,12 @@
             cursor: default;
             transition: letter-spacing 0.5s ease;
             
-            /* Flex layout to align the morphing text correctly */
+            /* Flex keeps them on the same line */
             display: flex;
-            align-items: baseline;
+            align-items: baseline; /* Critical for vertical alignment */
             justify-content: center;
-            gap: 0px; 
+            /* ZERO GAP: We handle spacing manually for precision */
+            gap: 0; 
         }
 
         h1.welcome-title:hover {
@@ -62,54 +64,80 @@
         .title-part-1 { 
             font-weight: 400; 
             font-style: italic; 
-            letter-spacing: -3px; 
+            letter-spacing: -3px;
+            /* Ensure z-index is above to keep the connection clean */
+            z-index: 2;
         }
 
-        /* --- MORPHING TEXT CONTAINER --- */
-        /* This grid allows us to stack the 3 versions of "come" directly on top of each other */
+        /* STACKING CONTAINER */
         .morph-container {
-            display: inline-grid;
+            display: grid; 
             grid-template-areas: "stack";
-            margin-left: 2px; /* Slight spacing adjustment */
+            /* Fixed Left Margin: Controls the gap precisely */
+            margin-left: 0.15em; 
+            justify-items: start; /* Forces all fonts to start at the exact same left edge */
         }
 
-        /* All 3 spans occupy the exact same space */
+        /* SHARED STYLES FOR ALL 3 FONTS */
         .morph-text {
             grid-area: stack;
             font-weight: 600;
             font-style: normal;
             letter-spacing: -2px;
-            opacity: 0; /* Start invisible */
-            animation: fontMorph 9s infinite ease-in-out;
+            opacity: 0;
+            /* Use a common animation, but individual transforms */
         }
 
-        /* Font 1: Playfair (Original) */
+        /* --- FONT TUNING --- */
+
+        /* 1. Playfair Display (The Reference) */
         .morph-text:nth-child(1) {
             font-family: 'Playfair Display', serif;
-            animation-delay: 0s;
+            animation: fontMorph1 9s infinite ease-in-out;
         }
 
-        /* Font 2: Bodoni Moda (Very high contrast, sharp) */
+        /* 2. Bodoni Moda (Needs to go DOWN slightly to match Playfair) */
         .morph-text:nth-child(2) {
             font-family: 'Bodoni Moda', serif;
+            animation: fontMorph2 9s infinite ease-in-out;
             animation-delay: 3s;
         }
 
-        /* Font 3: Prata (Elegant, softer) */
+        /* 3. Prata (Usually sits high, needs to go DOWN significantly) */
         .morph-text:nth-child(3) {
             font-family: 'Prata', serif;
+            animation: fontMorph3 9s infinite ease-in-out;
             animation-delay: 6s;
-            transform: translateY(2px); /* Micro-adjustment for Prata's baseline */
         }
 
-        /* The Animation: Fade In -> Wait -> Fade Out */
-        @keyframes fontMorph {
-            0% { opacity: 0; filter: blur(2px); }
+        /* --- INDIVIDUAL ANIMATIONS WITH TRANSFORM CORRECTIONS --- */
+        
+        @keyframes fontMorph1 {
+            0% { opacity: 0; filter: blur(4px); }
             10% { opacity: 1; filter: blur(0px); }
             33% { opacity: 1; filter: blur(0px); }
-            43% { opacity: 0; filter: blur(2px); }
+            43% { opacity: 0; filter: blur(4px); }
             100% { opacity: 0; }
         }
+
+        /* Bodoni: Includes a translateY(10px) to fix the "jumping up" issue */
+        @keyframes fontMorph2 {
+            0% { opacity: 0; filter: blur(4px); transform: translateY(10px); }
+            10% { opacity: 1; filter: blur(0px); transform: translateY(10px); }
+            33% { opacity: 1; filter: blur(0px); transform: translateY(10px); }
+            43% { opacity: 0; filter: blur(4px); transform: translateY(10px); }
+            100% { opacity: 0; transform: translateY(10px); }
+        }
+
+        /* Prata: Includes a translateY(15px) because Prata has a very tall x-height */
+        @keyframes fontMorph3 {
+            0% { opacity: 0; filter: blur(4px); transform: translateY(15px); }
+            10% { opacity: 1; filter: blur(0px); transform: translateY(15px); }
+            33% { opacity: 1; filter: blur(0px); transform: translateY(15px); }
+            43% { opacity: 0; filter: blur(4px); transform: translateY(15px); }
+            100% { opacity: 0; transform: translateY(15px); }
+        }
+
 
         .subtitle {
             font-family: 'Inter', sans-serif;
@@ -190,7 +218,6 @@
     <div class="content-wrapper" id="parallax-container">
         <h1 class="welcome-title">
             <span class="title-part-1">Wel</span>
-            
             <span class="morph-container">
                 <span class="morph-text">come</span>
                 <span class="morph-text">come</span>
