@@ -62,17 +62,13 @@
             font-weight: 400; 
             font-style: italic; 
             letter-spacing: -3px;
-            z-index: 2; /* Keeps "Wel" on top if they touch */
+            z-index: 2; 
         }
 
-        /* --- SPACING FIX --- */
         .morph-container {
             display: grid; 
             grid-template-areas: "stack";
-            
-            /* ADJUSTED MARGIN: Moves 'come' slightly right to fix overlap */
-            margin-left: -0.04em; 
-            
+            margin-left: -0.04em;          
             justify-items: start;
         }
 
@@ -83,8 +79,6 @@
             letter-spacing: -2px;
             opacity: 0;
         }
-
-        /* --- ANIMATIONS & VERTICAL FIXES --- */
 
         .morph-text:nth-child(1) {
             font-family: 'Playfair Display', serif;
@@ -111,7 +105,7 @@
             100% { opacity: 0; }
         }
 
-        /* Bodoni: Pushed down 10px to align baseline */
+
         @keyframes fontMorph2 {
             0% { opacity: 0; filter: blur(4px); transform: translateY(10px); }
             10% { opacity: 1; filter: blur(0px); transform: translateY(10px); }
@@ -120,7 +114,6 @@
             100% { opacity: 0; transform: translateY(10px); }
         }
 
-        /* Prata: Pushed down 15px to align baseline */
         @keyframes fontMorph3 {
             0% { opacity: 0; filter: blur(4px); transform: translateY(15px); }
             10% { opacity: 1; filter: blur(0px); transform: translateY(15px); }
