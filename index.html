@@ -3,9 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <title>Welcome - AI Benchmarks</title>
+    <meta name="description" content="The definitive global standard for analyzing AI censorship, safety alignment, and model bias. Explore real-time benchmarks for the world's leading LLMs.">
+    <meta name="keywords" content="AI, Benchmarks, LLM, Censorship, Safety, GPT-5, Llama 3, Artificial Intelligence">
+    <meta name="author" content="AI Benchmarks">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://artificialstupidity.wtf/">
+    <meta property="og:title" content="AI Benchmarks - The Global Standard">
+    <meta property="og:description" content="The definitive global standard for analyzing AI censorship, safety alignment, and model bias.">
+    <meta property="og:image" content="https://i.ibb.co/TB62zQbJ/artificialstupidity-wtf-2.jpg">
+
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://artificialstupidity.wtf/">
+    <meta property="twitter:title" content="AI Benchmarks - The Global Standard">
+    <meta property="twitter:description" content="The definitive global standard for analyzing AI censorship, safety alignment, and model bias.">
+    <meta property="twitter:image" content="https://i.ibb.co/TB62zQbJ/artificialstupidity-wtf-2.jpg">
+
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;600&family=Bodoni+Moda:opsz,wght@6..96,600&family=Prata&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
     <style>
         body, html {
             margin: 0;
@@ -62,13 +80,17 @@
             font-weight: 400; 
             font-style: italic; 
             letter-spacing: -3px;
-            z-index: 2; 
+            z-index: 2; /* Keeps "Wel" on top if they touch */
         }
 
+        /* --- SPACING FIX --- */
         .morph-container {
             display: grid; 
             grid-template-areas: "stack";
-            margin-left: -0.04em;          
+            
+            /* ADJUSTED MARGIN: Moves 'come' slightly right to fix overlap */
+            margin-left: -0.04em; 
+            
             justify-items: start;
         }
 
@@ -79,6 +101,8 @@
             letter-spacing: -2px;
             opacity: 0;
         }
+
+        /* --- ANIMATIONS & VERTICAL FIXES --- */
 
         .morph-text:nth-child(1) {
             font-family: 'Playfair Display', serif;
@@ -105,7 +129,7 @@
             100% { opacity: 0; }
         }
 
-
+        /* Bodoni: Pushed down 10px to align baseline */
         @keyframes fontMorph2 {
             0% { opacity: 0; filter: blur(4px); transform: translateY(10px); }
             10% { opacity: 1; filter: blur(0px); transform: translateY(10px); }
@@ -114,6 +138,7 @@
             100% { opacity: 0; transform: translateY(10px); }
         }
 
+        /* Prata: Pushed down 15px to align baseline */
         @keyframes fontMorph3 {
             0% { opacity: 0; filter: blur(4px); transform: translateY(15px); }
             10% { opacity: 1; filter: blur(0px); transform: translateY(15px); }
@@ -214,7 +239,7 @@
             safety alignment, and model bias.
         </p>
 
-        <a href="/benchmarks.html" class="liquid-button">
+        <a href="benchmarks.html" class="liquid-button">
             <i class="ph ph-chart-polar"></i>
             <span>Explore Benchmarks</span>
         </a>
