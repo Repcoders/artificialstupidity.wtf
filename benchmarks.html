@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Censorship Leaderboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@1,600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* --- GLOBAL THEME --- */
+        body, html {
+            margin: 0; padding: 0; width: 100%;
+            overflow-x: hidden; 
+            background-color: #050505;
+            font-family: 'Inter', sans-serif;
+            color: white;
+        }
+
+        .bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://i.ibb.co/cKLZ7KRC/IMG-0267.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.2; filter: blur(15px); z-index: -1;
+        }
+
+        .container {
+            position: relative; z-index: 10;
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh;
+            padding-top: 60px; padding-bottom: 60px;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 3rem;
+            margin: 0 0 10px 0;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.8);
+            text-align: center;
+        }
+
+        p.subtitle {
+            opacity: 0.7; margin-bottom: 40px;
+            font-size: 1rem; font-weight: 300;
+            text-align: center; max-width: 600px; line-height: 1.5;
+        }
+
+        /* --- GLASS PANEL --- */
+        .glass-box {
+            background: rgba(20, 20, 20, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 30px 60px -10px rgba(0, 0, 0, 0.6);
+            margin-bottom: 30px;
+        }
+
+        /* Chart Box */
+        .chart-box {
+            position: relative;
+            width: 90%; max-width: 1000px;
+            height: 800px; 
+            padding: 30px;
+        }
+
+        /* --- ANALYSIS GRID --- */
+        .analysis-grid {
+            width: 90%; max-width: 1000px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .analysis-card { padding: 30px; }
+        .card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem; margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+        }
+        .card-text { font-size: 0.95rem; line-height: 1.7; color: #ccc; }
+        
+        /* --- FOOTER --- */
+        .footer-note {
+            margin-top: 40px;
+            font-size: 0.85rem;
+            opacity: 0.4;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        @media (max-width: 768px) {
+            h2 { font-size: 2.2rem; }
+            .chart-box { height: 700px; padding: 15px; }
+            .analysis-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg"></div>
+
+    <div class="container">
+        <h2>The Censorship Leaderboard</h2>
+        <p class="subtitle">
+            Ranked by "Freedom Score" (Percentage of Prompts Accepted).<br>
+            Higher percentages mean the model is less censored.
+        </p>
+        
+        <div class="glass-box chart-box">
+            <canvas id="lollipopChart"></canvas>
+        </div>
+
+        <div class="analysis-grid">
+            <div class="glass-box analysis-card">
+                <h3 class="card-title" style="color: #4ade80;">The Top Tier</h3>
+                <p class="card-text">
+                    <strong>Llama 3</strong> and <strong>Mistral</strong> continue to lead with ~85% acceptance rates. 
+                    <br><br>
+                    However, <strong>Google</strong> is the surprise contender here: <span style="color: #4ade80; font-weight: 600;">Gemini 3 Pro</span> scores an impressive <strong>82.4%</strong>, breaking the trend of major corporate models being heavily restricted.
+                </p>
+            </div>
+
+            <div class="glass-box analysis-card">
+                <h3 class="card-title" style="color: #f87171;">The Race to the Bottom</h3>
+                <p class="card-text">
+                    <strong>OpenAI</strong> is driving the trend toward extreme safety. The flagship <strong>GPT-5.2</strong> accepts only <strong>32.4%</strong> of sensitive prompts.
+                    <br><br>
+                    Interestingly, Google's lower-tier model (<span style="color: #f87171; font-weight: 600;">Gemini 2.0 Flash</span>) joins this restrictive group, showing a massive divide between their "Pro" and "Flash" safety alignments.
+                </p>
+            </div>
+        </div>
+
+        <p class="footer-note">More Benchmarks Coming Soon</p>
+
+    </div>
+
+    <script>
+        const ctx = document.getElementById('lollipopChart').getContext('2d');
+
+        // --- DATA ---
+        const rawData = [
+            { name: 'Llama 3 (8B)', score: 85.3 },
+            { name: 'Ministral 8B', score: 85.3 },
+            { name: 'Gemini 3 Pro', score: 82.4 }, 
+            { name: 'Mistral 7B', score: 79.4 },
+            { name: 'GPT-4o Mini', score: 76.5 },
+            { name: 'Kat-Coder', score: 73.5 },
+            { name: 'Gemma 2 (9B)', score: 70.6 },
+            { name: 'GPT-4o', score: 55.9 },
+            { name: 'Deepseek V3.2', score: 50.0 },
+            { name: 'Llama 3 (70B)', score: 47.1 },
+            { name: 'Llama 3.3 (70B)', score: 41.2 },
+            { name: 'Grok 4.1 Fast', score: 38.2 },
+            { name: 'Gemini 2.0 Flash', score: 38.2 }, 
+            { name: 'GPT-5 Mini', score: 35.3 },
+            { name: 'GPT-5.2', score: 32.4 }
+        ];
+
+        const labels = rawData.map(d => d.name);
+        const dataValues = rawData.map(d => d.score);
+        
+        // Color Logic
+        const getColors = (val) => {
+            if (val > 75) return ['#4ade80', '#14532d']; // Green
+            if (val > 45) return ['#fbbf24', '#78350f']; // Yellow
+            return ['#f87171', '#7f1d1d'];               // Red
+        };
+
+        const bgColors = dataValues.map(v => getColors(v)[0]);
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Freedom Score',
+                        data: dataValues,
+                        backgroundColor: bgColors,
+                        borderColor: 'rgba(255,255,255,0.1)',
+                        borderWidth: 0,
+                        borderRadius: 20,
+                        borderSkipped: false,
+                        barPercentage: 0.15, 
+                        categoryPercentage: 0.8
+                    },
+                    {
+                        type: 'scatter',
+                        label: 'Heads',
+                        data: dataValues.map((v, i) => ({x: v, y: labels[i]})),
+                        backgroundColor: bgColors,
+                        borderColor: 'white',
+                        borderWidth: 2,
+                        pointRadius: 10,
+                        pointHoverRadius: 14
+                    }
+                ]
+            },
+            options: {
+                indexAxis: 'y', // Horizontal
+                responsive: true,
+                maintainAspectRatio: false,
+                layout: { padding: { right: 50, left: 10, top: 20, bottom: 20 } },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(20, 20, 20, 0.95)',
+                        titleColor: '#fff',
+                        bodyColor: '#ccc',
+                        padding: 12,
+                        borderColor: 'rgba(255,255,255,0.1)',
+                        borderWidth: 1,
+                        callbacks: {
+                            label: (ctx) => `Score: ${ctx.raw.x || ctx.raw}%`
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        min: 0, max: 100, 
+                        title: { 
+                            display: true, 
+                            text: 'Freedom Score (%)', 
+                            color: '#888', font: {size: 13} 
+                        },
+                        grid: { color: 'rgba(255,255,255,0.05)' },
+                        ticks: { 
+                            color: '#aaa',
+                            callback: function(value) { return value + "%" } 
+                        }
+                    },
+                    y: {
+                        grid: { display: false },
+                        ticks: {
+                            color: '#ddd',
+                            font: { size: 13, family: 'Inter', weight: '500' },
+                            padding: 15
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
