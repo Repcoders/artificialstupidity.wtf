@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global RP Benchmark</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <style>
+        /* --- GLOBAL THEME --- */
+        body, html {
+            margin: 0; padding: 0; width: 100%;
+            background-color: #050505;
+            font-family: 'Inter', sans-serif;
+            color: #e5e5e5;
+            overflow-x: hidden;
+        }
+
+        .bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 10%, #1a1a1a 0%, #000 70%);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            letter-spacing: -1px;
+            font-size: 2.5rem;
+            margin: 0;
+            background: linear-gradient(to right, #fff, #888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle { color: #666; font-size: 0.9rem; margin-top: 10px; }
+
+        /* --- LAYOUT --- */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 20px;
+            height: 800px;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            background: rgba(20, 20, 20, 0.6);
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sidebar-header {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #555;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            padding-left: 5px;
+        }
+        .sidebar-header:first-child { margin-top: 0; }
+
+        .model-btn {
+            background: transparent;
+            border: 1px solid #333;
+            color: #888;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: left;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .model-btn:hover { background: #1a1a1a; border-color: #555; color: #fff; }
+        
+        .model-btn.active {
+            background: #222;
+            border-color: var(--color);
+            color: #fff;
+            box-shadow: inset 3px 0 0 var(--color);
+        }
+
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color); }
+
+        /* --- GRAPH AREA --- */
+        .graph-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Skill Toggles Bar */
+        .skill-bar {
+            display: flex;
+            gap: 10px;
+            background: rgba(20, 20, 20, 0.8);
+            padding: 10px 15px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            flex-wrap: wrap;
+        }
+
+        .skill-toggle {
+            background: #111;
+            border: 1px solid #444;
+            color: #888;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex; align-items: center; gap: 6px;
+        }
+
+        .skill-toggle:hover { color: white; border-color: #666; }
+        
+        .skill-toggle.active {
+            background: #fff;
+            color: #000;
+            border-color: #fff;
+            font-weight: 600;
+        }
+
+        .graph-container {
+            background: rgba(15, 15, 15, 0.8);
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            flex-grow: 1;
+        }
+
+        /* --- FOOTER --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: #111;
+            border: 1px solid #222;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .stat-label { font-size: 0.8rem; color: #555; margin-bottom: 5px; }
+        .stat-val { font-size: 1.1rem; font-weight: 600; color: #fff; }
+        .highlight { color: #38bdf8; }
+
+        @media (max-width: 1000px) {
+            .dashboard { grid-template-columns: 1fr; height: auto; }
+            .sidebar { height: 300px; }
+            .graph-container { height: 400px; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg"></div>
+
+    <div class="container">
+        <header>
+            <h1>Global RP Benchmarks</h1>
+            <p class="subtitle">
+                <strong>Strict Grading:</strong> <40 = FAIL | 60 = AVG | 80 = GOOD | 90+ = ELITE
+            </p>
+        </header>
+
+        <div class="dashboard">
+            <div class="sidebar">
+                <div style="padding: 0 5px 10px 5px; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.8rem; color: #fff; font-weight: 600;">Models</span>
+                    <span style="font-size: 0.7rem; cursor: pointer; color: #ef4444" onclick="resetView()">Reset</span>
+                </div>
+                <div id="modelList"></div>
+            </div>
+
+            <div class="graph-wrapper">
+                
+                <div class="skill-bar" id="skillFilters">
+                    <span style="font-size: 0.8rem; color: #555; align-self: center; margin-right: 5px;">FILTER SKILLS:</span>
+                    </div>
+
+                <div class="graph-container">
+                    <canvas id="mainChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Memory Champion</div>
+                <div class="stat-val highlight">Gemini 3.0 Flash</div>
+                <div style="font-size: 0.8rem; color: #444">10M Token Context</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Prose Quality</div>
+                <div class="stat-val" style="color: #eab308">Claude 3.5 Opus</div>
+                <div style="font-size: 0.8rem; color: #444">Most Nuanced Writing</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Uncensored King</div>
+                <div class="stat-val" style="color: #ef4444">Grok 4.1 (Think)</div>
+                <div style="font-size: 0.8rem; color: #444">98/100 Freedom Score</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Best Value</div>
+                <div class="stat-val" style="color: #22c55e">DeepSeek V3.2</div>
+                <div style="font-size: 0.8rem; color: #444">Open Source Leader</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATASET: STRICT SCORING (Scale 0-100) ---
+        // Scores: [Prose, Logic, Memory, Freedom, Speed]
+        // Freedom < 30 means heavily censored (refuses standard RP).
+        // Prose < 60 means "AI Slop" style writing.
+        
+        const allModels = [
+            // --- GOOGLE GEMINI FAMILY ---
+            // Flash is the Utility King (Memory/Speed), but writes like a corporate bot (65 Prose)
+            { category: "Gemini Family", name: "Gemini 3.0 Flash", color: "#38bdf8", scores: [89, 85, 100, 45, 100], active: true },
+            { category: "Gemini Family", name: "Gemini 3.0 Pro", color: "#0ea5e9", scores: [88, 94, 95, 30, 60], active: true },
+            { category: "Gemini Family", name: "Gemini 2.5 Flash", color: "#7dd3fc", scores: [50, 75, 85, 20, 95], active: false },
+            { category: "Gemini Family", name: "Gemini 2.5 Pro", color: "#0284c7", scores: [85, 90, 85, 25, 45], active: false },
+            { category: "Gemini Family", name: "Gemini 1.5 Pro (Legacy)", color: "#94a3b8", scores: [72, 82, 90, 15, 30], active: false },
+            { category: "Gemini Family", name: "Gemini 1.5 Flash", color: "#cbd5e1", scores: [45, 70, 80, 25, 88], active: false },
+
+            // --- THE GIANTS ---
+            // GPT-5.2: 99 Logic, but 12 Freedom (Lobotomized)
+            { category: "Frontier Models", name: "GPT-5.2", color: "#f87171", scores: [65, 99, 92, 12, 55], active: true },
+            { category: "Frontier Models", name: "Claude 3.5 Opus", color: "#eab308", scores: [98, 90, 78, 45, 25], active: true }, // Slow but Writes Beautifully
+            { category: "Frontier Models", name: "Grok 4.1 (Think)", color: "#ffffff", scores: [88, 88, 70, 98, 70], active: true }, // The Anarchist
+            { category: "Frontier Models", name: "GPT-4o", color: "#10b981", scores: [60, 85, 75, 20, 80], active: false },
+            { category: "Frontier Models", name: "Claude 3.5 Sonnet", color: "#facc15", scores: [92, 85, 75, 40, 70], active: false },
+
+            // --- OPEN SOURCE / CHALLENGERS ---
+            { category: "Open Weights", name: "DeepSeek V3.2", color: "#22c55e", scores: [80, 85, 70, 85, 90], active: true },
+            { category: "Open Weights", name: "Llama 3.3 70B", color: "#3b82f6", scores: [78, 70, 65, 90, 85], active: false },
+            { category: "Open Weights", name: "Mistral Large 3", color: "#f59e0b", scores: [82, 85, 68, 80, 65], active: false },
+            { category: "Open Weights", name: "Qwen 2.5 72B", color: "#06b6d4", scores: [70, 82, 65, 88, 85], active: false },
+            { category: "Open Weights", name: "Yi-Large Preview", color: "#ec4899", scores: [75, 75, 60, 75, 75], active: false },
+            { category: "Open Weights", name: "Command R+ v2", color: "#d946ef", scores: [82, 60, 80, 55, 60], active: false },
+
+            // --- UNCENSORED / NICHE ---
+            { category: "Uncensored / RP", name: "Hermes 3 (Llama)", color: "#9ca3af", scores: [65, 50, 50, 99, 85], active: false },
+            { category: "Uncensored / RP", name: "WizardLM-3", color: "#6366f1", scores: [60, 65, 50, 92, 65], active: false },
+            { category: "Uncensored / RP", name: "Midnight Miqu", color: "#818cf8", scores: [85, 50, 45, 96, 50], active: false },
+            { category: "Uncensored / RP", name: "Stheno v3.3", color: "#fb7185", scores: [90, 40, 55, 95, 75], active: false }, // Great Prose, Dumb Logic
+
+            // --- LEGACY / SMALLER ---
+            { category: "Smaller / Legacy", name: "Gemma 2 27B", color: "#a5f3fc", scores: [55, 60, 45, 15, 80], active: false },
+            { category: "Smaller / Legacy", name: "Phi-4 Mini", color: "#14b8a6", scores: [40, 75, 35, 25, 98], active: false },
+            { category: "Smaller / Legacy", name: "Mistral Small", color: "#fdba74", scores: [50, 65, 45, 70, 92], active: false },
+            { category: "Smaller / Legacy", name: "GPT-4-Turbo", color: "#059669", scores: [55, 80, 65, 15, 65], active: false }
+        ];
+
+        // --- STATE MANAGEMENT ---
+        const allSkills = ['Prose (Writing)', 'Logic (Smart)', 'Memory (Ctx)', 'Freedom (NSFW)', 'Speed (T/s)'];
+        let activeSkills = [...allSkills]; 
+
+        const ctx = document.getElementById('mainChart').getContext('2d');
+        let chartInstance = null;
+
+        // --- RENDER SIDEBAR ---
+        function renderSidebar() {
+            const list = document.getElementById('modelList');
+            list.innerHTML = '';
+            
+            const categories = [...new Set(allModels.map(m => m.category))];
+            
+            categories.forEach(cat => {
+                const header = document.createElement('div');
+                header.className = 'sidebar-header';
+                header.innerText = cat;
+                list.appendChild(header);
+
+                allModels.filter(m => m.category === cat).forEach(m => {
+                    const btn = document.createElement('div');
+                    btn.className = `model-btn ${m.active ? 'active' : ''}`;
+                    btn.style.setProperty('--color', m.color);
+                    btn.innerHTML = `<span>${m.name}</span><div class="dot"></div>`;
+                    
+                    btn.onclick = () => {
+                        m.active = !m.active;
+                        renderSidebar();
+                        updateChart();
+                    };
+                    list.appendChild(btn);
+                });
+            });
+        }
+
+        // --- RENDER SKILL TOGGLES ---
+        function renderSkillFilters() {
+            const container = document.getElementById('skillFilters');
+            while (container.children.length > 1) {
+                container.removeChild(container.lastChild);
+            }
+
+            allSkills.forEach(skill => {
+                const btn = document.createElement('div');
+                const isActive = activeSkills.includes(skill);
+                btn.className = `skill-toggle ${isActive ? 'active' : ''}`;
+                btn.innerHTML = isActive 
+                    ? `<i class="ph-bold ph-check"></i> ${skill}` 
+                    : `<i class="ph-bold ph-x"></i> ${skill}`;
+                
+                btn.onclick = () => {
+                    if (activeSkills.includes(skill)) {
+                        activeSkills = activeSkills.filter(s => s !== skill);
+                    } else {
+                        activeSkills = allSkills.filter(s => activeSkills.includes(s) || s === skill);
+                    }
+                    renderSkillFilters();
+                    updateChart();
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        // --- CHART LOGIC ---
+        function updateChart() {
+            const activeModelsData = allModels.filter(m => m.active);
+            const indicesToKeep = allSkills
+                .map((skill, index) => activeSkills.includes(skill) ? index : -1)
+                .filter(index => index !== -1);
+
+            const filteredLabels = indicesToKeep.map(i => allSkills[i]);
+
+            const datasets = activeModelsData.map(m => ({
+                label: m.name,
+                data: indicesToKeep.map(i => m.scores[i]),
+                borderColor: m.color,
+                backgroundColor: 'transparent',
+                borderWidth: 2,
+                tension: 0.1,
+                pointRadius: 4,
+                pointHoverRadius: 8
+            }));
+
+            if (chartInstance) chartInstance.destroy();
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: filteredLabels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    scales: {
+                        y: {
+                            min: 0, max: 100,
+                            grid: { color: '#222' },
+                            ticks: { color: '#666' },
+                            title: { display: true, text: 'Strict Score (0-100)', color: '#444' }
+                        },
+                        x: {
+                            grid: { color: '#222' },
+                            ticks: { color: '#aaa', font: { weight: '600', size: 13 } }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.95)',
+                            titleColor: '#fff',
+                            bodyColor: '#ccc',
+                            borderColor: '#333',
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: true,
+                            boxPadding: 4,
+                            itemSort: (a, b) => b.raw - a.raw
+                        }
+                    }
+                }
+            });
+        }
+
+        function resetView() {
+            allModels.forEach(m => m.active = false);
+            // Default active set
+            const defaults = ["Gemini 3.0 Flash", "GPT-5.2", "Grok 4.1 (Think)", "DeepSeek V3.2"];
+            allModels.forEach(m => {
+                if (defaults.includes(m.name)) m.active = true;
+            });
+            activeSkills = [...allSkills];
+            renderSidebar();
+            renderSkillFilters();
+            updateChart();
+        }
+
+        // --- INIT ---
+        renderSidebar();
+        renderSkillFilters();
+        updateChart();
+
+    </script>
+</body>
+</html>
