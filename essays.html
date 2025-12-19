@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Essays</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* "Deep OLED" Palette */
+            --bg-body: #050505;       /* Pitch Black */
+            --bg-card: #0f0f0f;       /* Very Dark Gray */
+            --bg-hover: #161616;
+            
+            --text-main: #e6e6e6;
+            --text-muted: #888888;
+            
+            --accent: #c9a227;        /* Muted Gold */
+            --accent-glow: rgba(201, 162, 39, 0.2);
+            
+            --error-red: #ff5252;
+            --error-bg: rgba(255, 82, 82, 0.1);
+            
+            --border: #222222;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Playfair Display', serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.8;
+            padding: 60px 20px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        /* HEADER */
+        header {
+            text-align: center;
+            margin-bottom: 70px;
+            position: relative;
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 4em;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            color: #fff;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(255,255,255,0.1);
+        }
+
+        .subtitle {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-muted);
+            font-size: 0.95em;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            display: inline-block;
+            padding: 10px 30px;
+        }
+
+        /* CONTROLS */
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 60px;
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+            pointer-events: none; /* Let clicks pass through around button */
+        }
+
+        .check-button {
+            pointer-events: auto;
+            padding: 16px 45px;
+            background: rgba(15, 15, 15, 0.9);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+            font-size: 0.9em;
+            letter-spacing: 1px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
+
+        .check-button:hover {
+            background-color: var(--accent);
+            color: #000;
+            box-shadow: 0 0 30px var(--accent-glow);
+            transform: translateY(-2px);
+        }
+
+        /* ESSAY SECTIONS */
+        .essay-section {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 50px;
+            margin-bottom: 60px;
+            border-radius: 2px;
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .essay-section:hover {
+            border-color: #333;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            transform: translateY(-2px);
+        }
+
+        .essay-section h2 {
+            font-family: 'Cinzel', serif;
+            color: #fff;
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .essay-topic {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8em;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 35px;
+            display: block;
+            font-weight: 600;
+        }
+
+        .essay-content {
+            color: #ccc;
+            font-size: 1.1em;
+        }
+
+        .essay-content p {
+            margin-bottom: 25px;
+            text-align: justify;
+        }
+
+        /* GRAMMAR ERRORS */
+        .grammar-error {
+            border-bottom: 1px dotted #555;
+            transition: all 0.3s;
+        }
+
+        .grammar-error.revealed {
+            background-color: var(--error-bg);
+            border-bottom: 1px solid var(--error-red);
+            color: var(--error-red);
+            cursor: help;
+        }
+
+        /* RESULTS BOX */
+        .results {
+            display: none;
+            background: #080808;
+            border: 1px solid var(--accent);
+            padding: 40px;
+            margin-top: 40px;
+            position: relative;
+        }
+
+        .results::before {
+            content: 'REPORT';
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: #080808;
+            padding: 0 10px;
+            color: var(--accent);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.7em;
+            letter-spacing: 2px;
+        }
+
+        .error-list {
+            list-style: none;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95em;
+            color: #bbb;
+        }
+
+        .error-list li {
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #1a1a1a;
+            display: flex;
+            gap: 10px;
+        }
+
+        .error-list li strong { color: var(--accent); min-width: 140px; }
+        .error-list li em { color: var(--error-red); font-style: normal; }
+
+        /* TOOLTIP */
+        .error-tooltip {
+            visibility: hidden;
+            position: absolute;
+            background-color: #1a1a1a;
+            color: #fff;
+            border: 1px solid var(--error-red);
+            padding: 12px 16px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8em;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            max-width: 300px;
+        }
+
+        .error-tooltip.visible { visibility: visible; opacity: 1; }
+
+        footer {
+            text-align: center;
+            margin-top: 100px;
+            color: #333;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 2.5em; }
+            .essay-section { padding: 30px 20px; }
+            .check-button { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Essays</h1>
+            <p class="subtitle">hello mom, this is our essays</p>
+        </header>
+
+        <div class="controls">
+            <button class="check-button" onclick="checkGrammar()">Review & Check Grammar</button>
+        </div>
+
+        <div class="essay-section" id="chatgpt-essay">
+            <h2>ChatGPT's Essay</h2>
+            <span class="essay-topic">Topic: The Impact of Social Media on Modern Communication</span>
+            <div class="essay-content">
+                <p>Social media has fundamentally transformed the anthropological landscape of the twenty-first century, rewriting the unspoken rules of human connection. In previous eras, maintaining relationships required physical effort—handwritten letters sent via post, scheduled landline phone calls, or intentional face-to-face gatherings. Today, however, a global network of communication can be accessed with <span class="grammar-error" data-error="Missing article: should be 'a few'">few</span> taps on a cold smartphone screen. Platforms like Facebook, Twitter, and Instagram have evolved from simple networking tools into digital ecosystems that define how we perceive reality. They function not merely as communication channels, but as filters through which we view our political, social, and emotional worlds.</p>
+                
+                <p>However, this digital transformation comes with profound and often overlooked consequences. While social media enables instant connection across vast oceans, breaking down geographical barriers, it paradoxically <span class="grammar-error" data-error="Subject-verb disagreement: 'creates'">create</span> new forms of profound isolation. An individual may possess thousands of followers yet feel utterly detached from their immediate community. The curated nature of profiles means that users are constantly bombarded with the highlight reels of others' lives. This leads to a psychological phenomenon where we compare our internal struggles with everyone else's external successes, resulting in decreased self-esteem among the average <span class="grammar-error" data-error="Pluralization: should be 'viewers'">viewer</span>.</p>
+                
+                <p>Furthermore, the architecture of these platforms is designed to maximize engagement through intermittent reinforcement, much like a slot machine. This "dopamine loop" keeps users scrolling for hours, often at the expense of genuine, real-world productivity. We find ourselves in a state of continuous partial attention, physically present but digitally elsewhere. This fragmentation of focus has made deep work and sustained concentration increasingly rare commodities in the modern workplace, as the ping of a notification has become the metronome of our daily lives.</p>
+
+                <p>Moreover, the algorithmic brevity required by these platforms has fundamentally altered our cognitive habits. Complex, nuanced geopolitical ideas are reduced to provocative soundbites, and deep philosophical discussions become difficult when limited by character counts or 60-second video clips. This shift has implications not just for personal relationships but for the very fabric of democracy, as misinformation travels faster than <span class="grammar-error" data-error="Incomplete phrase: should be 'ever before' or just 'truth'">ever</span>. We are trading depth for width, and in doing so, we may be losing the ability to truly understand one another.</p>
+            </div>
+        </div>
+
+        <div class="essay-section" id="claude-essay">
+            <h2>Claude's Essay</h2>
+            <span class="essay-topic">Topic: The Role of Artificial Intelligence in Education</span>
+            <div class="essay-content">
+                <p>Artificial intelligence is rapidly reshaping educational landscapes across the globe, promising a revolution that could be as significant as the invention of the printing press. From personalized learning platforms that adapt to a child's unique psychology to automated grading systems that free up valuable instructor time, AI technologies offer unprecedented opportunities. These tools can analyze learning patterns, identify specific knowledge gaps, and provide targeted support in ways that <span class="grammar-error" data-error="Subject-verb disagreement: 'were' (plural)">was</span> previously impossible in the traditional, one-size-fits-all classroom setting.</p>
+                
+                <p>The benefits of integrating synthetic intelligence into academia extend far beyond mere administrative efficiency. Intelligent tutoring systems can provide immediate, non-judgmental feedback, allowing students to learn from mistakes in real-time without the fear of public failure. Virtual reality powered by AI can transport history students to the French Revolution or biology students inside a human cell, making abstract concepts more tangible and <span class="grammar-error" data-error="Comparative error: should be 'more engaging'">engaging</span> than textbooks alone could achieve. This democratization of high-quality tutoring was once the privilege of the wealthy; now, with the proliferation of digital tools, it is becoming accessible to the masses.</p>
+
+                <p>Furthermore, AI holds immense potential for students with disabilities, acting as a bridge to equity. Advanced speech-to-text programs, real-time sign language translation, and visual recognition software allow students who were previously marginalized to participate fully in the general curriculum. By tailoring the delivery of content to the specific sensory and cognitive needs of the student, AI ensures that education is not just a privilege for the neurotypical, but a right accessible to all.</p>
+                
+                <p>Nevertheless, the integration of AI into education raises urgent ethical questions that we cannot ignore. There are valid concerns regarding data privacy, the potential for algorithmic bias to reinforce societal inequalities, and the risk that over-reliance on technology might atrophy critical thinking skills. The challenge lies in harnessing AI's potential while preserving the irreplaceable human elements of education: mentorship, inspiration, and the cultivation of <span class="grammar-error" data-error="Word form: should be 'emotional'">emotion</span> intelligence, which no machine can truly replicate.</p>
+            </div>
+        </div>
+
+        <div class="essay-section" id="gemini-essay">
+            <h2>Gemini's Essay</h2>
+            <span class="essay-topic">Topic: Climate Change and Individual Responsibility</span>
+            <div class="essay-content">
+                <p>The climate crisis represents one of the most pressing existential challenges facing humanity today, requiring a mobilization of resources comparable to wartime efforts. Rising global temperatures, extreme weather events, and ecological disruption threaten the very foundations of human civilization and the biodiversity of our planet. While governments and multinational corporations bear the lion's share of responsibility for historical emissions, the role of individual action cannot be <span class="grammar-error" data-error="Wrong word: should be 'underestimated' (understated means expressed subtly)">understated</span>.</p>
+                
+                <p>Individual choices regarding diet, travel, and consumption collectively shape cultural norms and economic demand. When citizens choose to reduce meat consumption, utilize public transportation, or divest from fossil fuels, they send powerful market signals that corporations cannot ignore. These decisions, multiplied across millions of individuals, create a groundswell for change. Furthermore, individual action often serves as a gateway to broader advocacy; people who make personal commitments to sustainability frequently become the loudest voices for <span class="grammar-error" data-error="Article error: delete 'the' before systemic">the systemic</span> change.</p>
+                
+                <p>There is also a compelling economic argument for the individual adoption of green technologies. As consumers shift their purchasing power toward electric vehicles, solar panels, and energy-efficient appliances, the cost of these technologies plummets due to economies of scale. This "learning curve" effect makes sustainable solutions cheaper for everyone, accelerating the global transition away from carbon. Thus, the early adopter is not merely making a personal lifestyle choice, but actively participating in the economic restructuring of the energy sector.</p>
+
+                <p>However, placing the burden exclusively on the individual is a dangerous narrative often pushed by polluters to deflect blame. It risks obscuring the fact that a relatively small number of industrial entities account for a disproportionate share of global emissions. Focusing solely on personal carbon footprints can lead to "eco-anxiety" and paralysis rather than effective political action. The most promising path forward <span class="grammar-error" data-error="Subject-verb disagreement: 'involves'">involve</span> a symbiosis of personal responsibility and collective action. We must live our values while simultaneously demanding the policy reforms necessary to save our shared home.</p>
+            </div>
+        </div>
+
+        <div class="results" id="results">
+            <ul class="error-list" id="error-list"></ul>
+        </div>
+
+        <footer>
+            <p>© 2025 Essay Collection. Designed for Mom.</p>
+        </footer>
+    </div>
+
+    <script>
+        function checkGrammar() {
+            const errors = document.querySelectorAll('.grammar-error');
+            const errorList = document.getElementById('error-list');
+            const results = document.getElementById('results');
+            
+            errorList.innerHTML = '';
+            
+            errors.forEach((error) => {
+                error.classList.add('revealed');
+                
+                const li = document.createElement('li');
+                const errorText = error.textContent;
+                const errorMsg = error.getAttribute('data-error');
+                const sectionTitle = error.closest('.essay-section').querySelector('h2').textContent;
+                
+                li.innerHTML = `<div><strong>${sectionTitle}</strong></div> <div>Found "<em>${errorText}</em>" — ${errorMsg}</div>`;
+                errorList.appendChild(li);
+            });
+            
+            results.style.display = 'block';
+            setTimeout(() => {
+                results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+
+        const tooltip = document.createElement('div');
+        tooltip.className = 'error-tooltip';
+        document.body.appendChild(tooltip);
+
+        document.querySelectorAll('.grammar-error').forEach(error => {
+            error.addEventListener('mouseenter', function(e) {
+                if (!this.classList.contains('revealed')) return;
+
+                const errorMsg = this.getAttribute('data-error');
+                tooltip.textContent = errorMsg;
+                tooltip.classList.add('visible');
+                
+                const rect = this.getBoundingClientRect();
+                const scrollY = window.scrollY || window.pageYOffset;
+                
+                let top = rect.top + scrollY - tooltip.offsetHeight - 12;
+                let left = rect.left + (rect.width / 2) - (tooltip.offsetWidth / 2);
+
+                if (left < 10) left = 10;
+                if (left + tooltip.offsetWidth > window.innerWidth) {
+                    left = window.innerWidth - tooltip.offsetWidth - 10;
+                }
+
+                tooltip.style.top = `${top}px`;
+                tooltip.style.left = `${left}px`;
+            });
+            
+            error.addEventListener('mouseleave', function() {
+                tooltip.classList.remove('visible');
+            });
+        });
+    </script>
+</body>
+</html>
